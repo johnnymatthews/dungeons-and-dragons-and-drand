@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html html lang="en-US">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dungeons & Dragons & Drand | Dice Roller</title>
+</head>
+
+<body onload="main()">
+
+    <p>Raw drand output: <span id="raw-drand-output"></span></p>
+    <p>Full number is: <span id="full-number-output"></span></p>
+
+    <h1>Dungeons & Dragons & Drand</h1>
+    <table>
+        <tr>
+            <th>Dice</th>
+            <th>Number</th>
+        </tr>
+        <tr>
+            <td>D20</td>
+            <td id="d20-output"></td>
+        </tr>
+        <tr>
+            <td>D12</td>
+            <td id="d12-output"></td>
+        </tr>
+        <tr>
+            <td>D10 00-90</td>
+            <td id="d10_00_99-output"></td>
+        </tr>
+        <tr>
+            <td>D10 0-9</td>
+            <td id="d10_0_9-output"></td>
+        </tr>
+        <tr>
+            <td>D6</td>
+            <td id="d6-output"></td>
+        </tr>
+        <tr>
+            <td>D4</td>
+            <td id="d4-output"></td>
+        </tr>
+    </table>
+
+</body>
+<script>
+    // Call the Protocol Labs drand node and get the randomness
+    async function getRandomness(drand_round) {
+        if (!drand_round) {
+            drand_round = 0;
+        }
+
+        try {
+            let response = await fetch(`https://cors-anywhere.herokuapp.com/https://drand.protocol.ai:8081/public/${drand_round}`);
+            return await response.json();
+        } catch (error_message) {
+            console.error(error_message);
+        }
+    }
+
+    async function main() {
+        let drand_response = await getRandomness();
+        console.log(drand_response);
+
+        let d20 = (BigInt(`0x${drand_response.randomness}`) % 20n + 1n).toString(10);
+        let d12 = (BigInt(`0x${drand_response.randomness}`) % 12n + 1n).toString(10);
+        let d10_00_99 = (BigInt(`0x${drand_response.randomness}`) % 10n + 1n).toString(10) + '0';
+        let d10_0_9 = (BigInt(`0x${drand_response.randomness}`) % 10n + 1n).toString(10);
+        let d6 = (BigInt(`0x${drand_response.randomness}`) % 6n + 1n).toString(10);
+        let d4 = (BigInt(`0x${drand_response.randomness}`) % 4n + 1n).toString(10);
+
+        document.getElementById(`raw-drand-output`).innerHTML = drand_response.randomness;
+        document.getElementById(`d20-output`).innerHTML = d20;
+        document.getElementById(`d12-output`).innerHTML = d12;
+        document.getElementById(`d10_00_99-output`).innerHTML = d10_00_99;
+        document.getElementById(`d10_0_9-output`).innerHTML = d10_0_9;
+        document.getElementById(`d6-output`).innerHTML = d6;
+        document.getElementById(`d4-output`).innerHTML = d4;
+    }
+</script>
+
+</html>
