@@ -5,18 +5,27 @@ function fetch_data(callback, api_call) {
         .catch(error => callback(error, null))
 };
 
-function main() {
-    let previous_rounds = [];
+function get_randomness(round) {
+    if(round == null) {
+        round = "latest";
+    }
 
     fetch_data((error, current_round) => {
         if(error) {
             console.log(error);
             document.getElementById("paint_output").innerHTML = error;
         } else {
-            console.log("current_round: ", current_round);
+            console.log(current_round);
+            return current_round.randomness;
         }
-    }, "public/latest");
+    }, `public/${round}`);
 }
 
-main();
-setInterval(main, 15000)
+function random_d6() {
+
+}
+
+function main() {
+    let randomness = get_randomness();
+}
+get_randomness();
