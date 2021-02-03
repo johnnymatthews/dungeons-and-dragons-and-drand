@@ -1,23 +1,22 @@
-import Client, { HTTP } from 'https://cdn.jsdelivr.net/npm/drand-client/drand.js';
+function fetch_data(callback, api_call) {
+    fetch(`https://drand.cloudflare.com/${api_call}`)
+        .then(response => response.json())
+        .then(json => callback(null, json))
+        .catch(error => callback(error, null))
+};
 
-const chainHash = '8990e7a9aaed2ffed73dbd7092123d6f289930540d7651336225dc172e51b2ce'; 
-const urls = [
-    'https://api.drand.sh',
-    'https://drand.cloudflare.com'
-];
+function main() {
+    let previous_rounds = [];
 
-function paint_number(thingy) {
-    document.getElementById("paint_output").innerHTML=thingy;
-}
-
-async function main() {
-
-    const options = { chainHash };
-    const client = await Client.wrap(HTTP.forURLs(urls, chainHash), options);
-    const res = await client.get();
-    console.log(res.round, res.randomness);
-    paint_number(res.randomness);
+    fetch_data((error, current_round) => {
+        if(error) {
+            console.log(error);
+            document.getElementById("paint_output").innerHTML = error;
+        } else {
+            console.log("current_round: ", current_round);
+        }
+    }, "public/latest");
 }
 
 main();
-setInterval(main, 5000);
+setInterval(main, 15000)
