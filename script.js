@@ -1,6 +1,4 @@
-// START Alea.min.js
-!function(n,t,e){function u(n){var t=this,e=function(){var s=4022871197;return function(n){n=String(n);for(var t=0;t<n.length;t++){var e=.02519603282416938*(s+=n.charCodeAt(t));e-=s=e>>>0,s=(e*=s)>>>0,s+=4294967296*(e-=s)}return 2.3283064365386963e-10*(s>>>0)}}();t.next=function(){var n=2091639*t.s0+2.3283064365386963e-10*t.c;return t.s0=t.s1,t.s1=t.s2,t.s2=n-(t.c=0|n)},t.c=1,t.s0=e(" "),t.s1=e(" "),t.s2=e(" "),t.s0-=e(n),t.s0<0&&(t.s0+=1),t.s1-=e(n),t.s1<0&&(t.s1+=1),t.s2-=e(n),t.s2<0&&(t.s2+=1),e=null}function o(n,t){return t.c=n.c,t.s0=n.s0,t.s1=n.s1,t.s2=n.s2,t}function s(n,t){var e=new u(n),s=t&&t.state,r=e.next;return r.int32=function(){return 4294967296*e.next()|0},r.double=function(){return r()+11102230246251565e-32*(2097152*r()|0)},r.quick=r,s&&("object"==typeof s&&o(s,e),r.state=function(){return o(e,{})}),r}t&&t.exports?t.exports=s:e&&e.amd?e(function(){return s}):this.alea=s}(0,"object"==typeof module&&module,"function"==typeof define&&define);
-// END Alea.min.js
+let global_randomness;
 
 function fetch_data(callback, api_call) {
     fetch(`https://drand.cloudflare.com/${api_call}`)
@@ -9,7 +7,7 @@ function fetch_data(callback, api_call) {
         .catch(error => callback(error, null))
 };
 
-function get_randomness(round) {
+function fetch_randomness(round) {
     if(round == null) {
         round = "latest";
     }
@@ -17,17 +15,41 @@ function get_randomness(round) {
     fetch_data((error, current_round) => {
         if(error) {
             console.log(error);
-            document.getElementById("paint_output").innerHTML = error;
+            return error;
         } else {
-            console.log(current_round);
-            return current_round.randomness;
+            global_randomness = current_round.randomness;
         }
     }, `public/${round}`);
 }
 
-function main() {
-    var arng = new alea(get_randomness());
-    console.log(arng());
+function roll_dice(sides) {
+    // This is a very silly way of getting a random float, but it's late and I'm tired.
+    let yolo;
+    yolo = parseInt(global_randomness);
+    yolo = yolo.toString();
+    yolo = "0." + yolo;
+    yolo = parseFloat(yolo);
+
+    let results = {
+        randomness: global_randomness,
+        floated: yolo + 1,
+        d4: Math.trunc(yolo * 4),
+        d6: Math.trunc(yolo * 6),
+        d8: Math.trunc(yolo * 8),
+        d10: Math.trunc(yolo * 10),
+        d12: Math.trunc(yolo * 12),
+        d20: Math.trunc(yolo * 20)
+    };
+
+    console.log(results);
 }
 
-main();
+function paint_results(results) {
+    document.getElementById("results_output").innerHTML = results;
+}
+
+function main() {
+    fetch_randomness();
+    let result = roll_dice(6);
+    paint_results(result);
+}

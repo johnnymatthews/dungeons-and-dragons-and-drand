@@ -6,19 +6,20 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Dungeons & Dragons & Drand | Dice Roller</title>
         <style>
-        body {
-            background: #202020;
-            color: #f2f3f4;
-            margin: auto;
-            padding: 30px;
-            width: 50%;
-        }
+body {
+    background: #202020;
+    color: #f2f3f4;
+    margin: auto;
+    padding: 30px;
+    width: 50%;
+}
         </style>
     </head>
 
-    <body> 
+    <body onload="fetch_randomness()"> 
         <button onclick="main()">Click here.</button>
+        <p id="results_output"><p>
     </body>
-    
+
     <script src="script.js"></script>
 </html>
